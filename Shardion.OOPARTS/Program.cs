@@ -1,7 +1,13 @@
+using System.Text.Json.Serialization;
 using Shardion.OOPARTS;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 builder.Logging.AddConsole();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.AddContext<AppJsonSerializerContext>();
+});
 
 var app = builder.Build();
 
@@ -16,3 +22,8 @@ todosApi.MapGet("/{id}", (int id) =>
 
 app.Run();
 
+[JsonSerializable(typeof(Todo[]))]
+internal partial class AppJsonSerializerContext : JsonSerializerContext
+{
+
+}

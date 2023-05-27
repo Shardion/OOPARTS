@@ -1,71 +1,59 @@
-using System.Text.Json.Serialization;
-using System.Collections.Generic;
-using System;
+namespace Shardion.OOPARTS;
 
-namespace Shardion.OOPARTS
+public class Todo
 {
-    public class Todo
-    {
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        public string? Title { get; set; }
+    public string? Title { get; set; }
 
-        public DateOnly? DueBy { get; set; }
+    public DateOnly? DueBy { get; set; }
 
-        public bool IsComplete { get; set; }
-    }
+    public bool IsComplete { get; set; }
+}
 
-    [JsonSourceGenerationOptions(WriteIndented = true)]
-    [JsonSerializable(typeof(Todo))]
-    internal partial class TodoContext : JsonSerializerContext
-    {
-
-    }
-
-    static class TodoGenerator
-    {
-        private static readonly (string[] Prefixes, string[] Suffixes)[] _parts = new[]
-            {
-                (new[] { "Walk the", "Feed the" }, new[] { "dog", "cat", "goat" }),
-                (new[] { "Do the", "Put away the" }, new[] { "groceries", "dishes", "laundry" }),
-                (new[] { "Clean the" }, new[] { "bathroom", "pool", "blinds", "car" })
-            };
-
-        internal static IEnumerable<Todo> GenerateTodos(int count = 5)
+static class TodoGenerator
+{
+    private static readonly (string[] Prefixes, string[] Suffixes)[] _parts = new[]
         {
-            var titleCount = _parts.Sum(row => row.Prefixes.Length * row.Suffixes.Length);
-            var titleMap = new (int Row, int Prefix, int Suffix)[titleCount];
-            var mapCount = 0;
-            for (var i = 0; i < _parts.Length; i++)
+            (new[] { "Walk the", "Feed the" }, new[] { "dog", "cat", "goat" }),
+            (new[] { "Do the", "Put away the" }, new[] { "groceries", "dishes", "laundry" }),
+            (new[] { "Clean the" }, new[] { "bathroom", "pool", "blinds", "car" })
+        };
+
+    internal static IEnumerable<Todo> GenerateTodos(int count = 5)
+    {
+        var titleCount = _parts.Sum(row => row.Prefixes.Length * row.Suffixes.Length);
+        var titleMap = new (int Row, int Prefix, int Suffix)[titleCount];
+        var mapCount = 0;
+        for (var i = 0; i < _parts.Length; i++)
+        {
+            var prefixes = _parts[i].Prefixes;
+            var suffixes = _parts[i].Suffixes;
+            for (var j = 0; j < prefixes.Length; j++)
             {
-                var prefixes = _parts[i].Prefixes;
-                var suffixes = _parts[i].Suffixes;
-                for (var j = 0; j < prefixes.Length; j++)
+                for (var k = 0; k < suffixes.Length; k++)
                 {
-                    for (var k = 0; k < suffixes.Length; k++)
-                    {
-                        titleMap[mapCount++] = (i, j, k);
-                    }
+                    titleMap[mapCount++] = (i, j, k);
                 }
             }
+        }
 
-            Random.Shared.Shuffle(titleMap);
+        Random.Shared.Shuffle(titleMap);
 
-            for (var id = 1; id <= count; id++)
+        for (var id = 1; id <= count; id++)
+        {
+            var (rowIndex, prefixIndex, suffixIndex) = titleMap[id];
+            var (prefixes, suffixes) = _parts[rowIndex];
+            yield return new Todo
             {
-                var (rowIndex, prefixIndex, suffixIndex) = titleMap[id];
-                var (prefixes, suffixes) = _parts[rowIndex];
-                yield return new Todo
+                Id = id,
+                Title = string.Join(' ', prefixes[prefixIndex], suffixes[suffixIndex]),
+                DueBy = Random.Shared.Next(-200, 365) switch
                 {
-                    Id = id,
-                    Title = string.Join(' ', prefixes[prefixIndex], suffixes[suffixIndex]),
-                    DueBy = Random.Shared.Next(-200, 365) switch
-                    {
-                        < 0 => null,
-                        var days => DateOnly.FromDateTime(DateTime.Now.AddDays(days))
-                    }
-                };
-            }
+                    < 0 => null,
+                    var days => DateOnly.FromDateTime(DateTime.Now.AddDays(days))
+                }
+            };
         }
     }
 }
