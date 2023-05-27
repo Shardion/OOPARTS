@@ -22,6 +22,8 @@
           dotnet-runtime = dotnet-runtime_8;
           nugetDeps = "";
 
+          buildInputs = with nixpkgsFor.${system}; [ openssl ];
+
           executables = [ "Shardion.OOPARTS" ];
           meta.mainProgram = "Shardion.OOPARTS";
         };
@@ -34,6 +36,7 @@
             packages = with nixpkgsFor.${system}; [
               omnisharp-roslyn
               dotnet-sdk_8
+              openssl
             ];
           };
         }

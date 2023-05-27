@@ -1,0 +1,61 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  color: CanvasText;
+  background: Canvas;
+  font-family: BlinkMacSystemFont,-apple-system,system-ui,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+  display: flex;
+  margin: 0;
+  flex-direction: column;
+}
+
+.header-bar { 
+  color: ButtonText;
+  background: ButtonFace;
+  border: solid ButtonBorder;
+  border-width: 0 0 0.05ch 0;
+  margin: 0 0 4em 0;
+}
+
+.header-bar-contents {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  width: min-content;
+  height: min-content;
+  padding: 0.3em 0.35em 0.3em 0.35em;
+}
+
+.header-bar-entry {
+  flex: 1;
+  padding: 0 0.5em 0 0.5em;
+  min-width: fit-content;
+  height: 1.5em;
+}
+
+.prominent-header-bar-entry {
+  flex: 1;
+  padding: 0 0.5em 0 0.5em;
+  min-width: fit-content;
+  height: 1.5em;
+  font-weight: bolder;
+  font-size: 20px;
+}
+
+main {
+  max-width: 60em;
+  margin: 0 auto;
+  padding: 0 1em 0 1em;
+}
+
+h1 {
+  font-weight: bolder;
+  font-size: 36px;
+  border-bottom-color: ButtonBorder;
+  border-bottom-style: solid;
+  border-bottom-width: 0.05ch;
+  padding-bottom: 0.2ch;
+  margin-bottom: 1ch;
+}
