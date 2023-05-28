@@ -35,7 +35,10 @@
             name = "default";
             packages = with nixpkgsFor.${system}; [
               omnisharp-roslyn
-              dotnet-sdk_8
+              (with dotnetCorePackages; combinePackages [
+                sdk_8_0
+                sdk_7_0 # OmniSharp breaks without a supported SDK installed
+              ])
               openssl
             ];
           };
