@@ -2,11 +2,18 @@ using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 using System;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Shardion.Ooparts;
 using Shardion.Ooparts.Storage;
 using Shardion.Ooparts.Validation;
 
-var builder = WebApplication.CreateSlimBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(args);
 builder.Logging.AddConsole();
 
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -16,7 +23,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 builder.Services.AddSingleton<IStorageLayer, MemoryStorageLayer>();
 builder.Services.AddSingleton<IValidationLayer, BasicValidationLayer>();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 if (app.Environment.IsDevelopment() && app.Services.GetService<IStorageLayer>() is IStorageLayer backend) {
     app.Logger.LogInformation($"Generated testing upload batch {(await backend.StoreUploadBatch(new UploadBatch(Array.Empty<Upload>()))).ToString()}");
 }
