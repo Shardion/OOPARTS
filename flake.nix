@@ -16,16 +16,16 @@
           name = "ooparts-${version}";
 
           src = builtins.path { path = ./.; name = "src"; };
-          projectFile = "Shardion.OOPARTS/Shardion.OOPARTS.csproj";
+          projectFile = "Shardion.Ooparts/Shardion.Ooparts.csproj";
 
           dotnet-sdk = dotnet-sdk_8;
           dotnet-runtime = dotnet-runtime_8;
-          nugetDeps = "";
+          nugetDeps = ./deps.nix;
 
           buildInputs = with nixpkgsFor.${system}; [ openssl ];
 
-          executables = [ "Shardion.OOPARTS" ];
-          meta.mainProgram = "Shardion.OOPARTS";
+          executables = [ "Shardion.Ooparts" ];
+          meta.mainProgram = "Shardion.Ooparts";
         };
       };
 
