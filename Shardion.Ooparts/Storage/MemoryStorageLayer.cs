@@ -2,13 +2,13 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System;
 
-namespace Shardion.Ooparts.Backend
+namespace Shardion.Ooparts.Storage
 {
     /// <summary>
     /// A non-asynchronous storage backend that keeps all upload batches in memory.
     /// Useful for development purposes.
     /// </summary>
-    public class MemoryStorageBackend : IStorageBackend
+    public class MemoryStorageLayer : IStorageLayer
     {
         private ConcurrentDictionary<Guid, UploadBatch> _batches;
 
@@ -33,7 +33,7 @@ namespace Shardion.Ooparts.Backend
             return Task.CompletedTask;
         }
 
-        public MemoryStorageBackend()
+        public MemoryStorageLayer()
         {
             _batches = new();
         }

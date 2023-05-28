@@ -1,8 +1,8 @@
 using System;
 
-namespace Shardion.Ooparts.Backend
+namespace Shardion.Ooparts.Storage
 {
-    public interface IStorageBackend
+    public interface IStorageLayer
     {
         Task<Guid?> StoreUploadBatch(UploadBatch batch);
         Task<UploadBatch?> RetrieveUploadBatch(Guid batchId);

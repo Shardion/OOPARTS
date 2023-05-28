@@ -7,7 +7,9 @@
     <ServerGarbageCollection>false</ServerGarbageCollection>
     <InvariantGlobalization>true</InvariantGlobalization>
     <PublishAot>true</PublishAot>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot/" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+  </ItemGroup>
 </Project>
