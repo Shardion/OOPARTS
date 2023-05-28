@@ -4,8 +4,8 @@ namespace Shardion.Ooparts.Backend
 {
     public interface IStorageBackend
     {
-        Guid StoreUploadBatch(UploadBatch batch);
-        UploadBatch? RetrieveUploadBatch(Guid batchId);
-        void DestroyUploadBatch(Guid batchId);
+        Task<Guid?> StoreUploadBatch(UploadBatch batch);
+        Task<UploadBatch?> RetrieveUploadBatch(Guid batchId);
+        Task DestroyUploadBatch(Guid batchId);
     }
 }

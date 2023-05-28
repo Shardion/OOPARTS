@@ -1,27 +1,36 @@
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using System;
 
 namespace Shardion.Ooparts.Backend
 {
+    /// <summary>
+    /// A non-asynchronous storage backend that keeps all upload batches in memory.
+    /// Useful for development purposes.
+    /// </summary>
     public class MemoryStorageBackend : IStorageBackend
     {
-        private Dictionary<Guid, UploadBatch> _batches;
+        private ConcurrentDictionary<Guid, UploadBatch> _batches;
 
-        public Guid StoreUploadBatch(UploadBatch batch)
+        public Task<Guid?> StoreUploadBatch(UploadBatch batch)
         {
             Guid batchId = Guid.NewGuid();
-            _batches[batchId] = batch;
-            return batchId;
+            if (_batches.TryAdd(batchId, batch))
+            {
+                return Task.FromResult<Guid?>(batchId);
+            }
+            return Task.FromResult<Guid?>(null);
         }
 
-        public UploadBatch? RetrieveUploadBatch(Guid batchId)
+        public Task<UploadBatch?> RetrieveUploadBatch(Guid batchId)
         {
-            return _batches.TryGetValue(batchId, out UploadBatch batch) ? batch : null;
+            return Task.FromResult<UploadBatch?>(_batches.TryGetValue(batchId, out UploadBatch batch) ? batch : null);
         }
 
-        public void DestroyUploadBatch(Guid batchId)
+        public Task DestroyUploadBatch(Guid batchId)
         {
-            _batches.Remove(batchId);
+            _batches.TryRemove(batchId, out UploadBatch _);
+            return Task.CompletedTask;
         }
 
         public MemoryStorageBackend()

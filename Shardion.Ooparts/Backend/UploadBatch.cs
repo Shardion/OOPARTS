@@ -2,6 +2,12 @@ namespace Shardion.Ooparts.Backend
 {
     public class UploadBatch
     {
-        public Upload[] Uploads { get; }
+        public IReadOnlyCollection<Upload> Uploads { get; }
+        public DateTime CreationTimestamp { get; }
+
+        public UploadBatch(IReadOnlyCollection<Upload> uploads)
+        {
+            CreationTimestamp = DateTime.UtcNow;
+        }
     }
 }

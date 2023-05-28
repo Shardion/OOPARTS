@@ -9,15 +9,13 @@
       <div class="header-bar">
         <div class="header-bar-contents">
           <p class="prominent-header-bar-entry">OOPARTS</p>
-          <p class="header-bar-entry">Upload</p>
-          <p class="header-bar-entry">About</p>
-          <p class="header-bar-entry">Source Code</p>
+          <p class="header-bar-entry"><a href="https://github.com/shardion/ooparts">Source Code</a></p>
         </div>
       </div>
       <main>
         <form action="/api/v0/upload" method="post" enctype="multipart/form-data">
             <label>
-                Upload file:
+                Upload files:
                 <input type="file" name="file" multiple>
             </label>
             <input type="submit" value="Upload files">
