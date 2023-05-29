@@ -2,7 +2,7 @@
 # Please dont edit it manually, your changes might get overwritten!
 
 { fetchNuGet }: [
-  (fetchNuGet { pname = "Microsoft.DotNet.ILCompiler"; version = "8.0.0-preview.3.23174.8"; sha256 = "0zsh4najx636gv7l4acxvxcx778baczcm45hsfkmjdc7g5cs1k2x"; })
-  (fetchNuGet { pname = "Microsoft.NET.ILLink.Tasks"; version = "8.0.0-preview.3.23174.8"; sha256 = "1h86pnwzrlb3yg2328rqmc6sgcwi1dbbyqgh20l58z064sfa12wx"; })
-  (fetchNuGet { pname = "runtime.osx-arm64.Microsoft.DotNet.ILCompiler"; version = "8.0.0-preview.3.23174.8"; sha256 = "10p15rxwh14kwfjb57p1imyas4bfm64hwipk169n94cflk3pl7d4"; })
+  (fetchNuGet { pname = "Microsoft.DotNet.ILCompiler"; version = "8.0.0-preview.4.23259.5"; sha256 = "178hvmkqamwq2zfifmyj63zwl4fdqwx5wljf84cy5wa4wr0grjj3"; })
+  (fetchNuGet { pname = "Microsoft.NET.ILLink.Tasks"; version = "8.0.0-preview.4.23259.5"; sha256 = "1km3l73p8khiywjg02wnfmxgpiznhq53b0vc2l5qhkmb0085jw8m"; })
+  (fetchNuGet { pname = "runtime.osx-arm64.Microsoft.DotNet.ILCompiler"; version = "8.0.0-preview.4.23259.5"; sha256 = "1m3983kds7kwx2nllifs4nw31nsgbz8083q1aig41v0j73m52db9"; })
 ]
