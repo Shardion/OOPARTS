@@ -27,7 +27,7 @@ WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(new WebApplicat
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
-    options.SerializerOptions.AddContext<AppJsonSerializerContext>();
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
 
 builder.Services.AddSingleton<IStorageLayer, MemoryStorageLayer>();
@@ -49,8 +49,9 @@ RouteGroupBuilder oopartsApi = app.MapGroup("/api/v0");
 oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidationLayer validation, IStorageLayer storage) => {
     app.Logger.LogDebug($"Storing batch into backend {storage}");
     ConcurrentBag<Upload> uploads = new();
-    await Parallel.ForEachAsync<IFormFile>(files, async (IFormFile file, CancellationToken ct) => {
+    await Parallel.ForEachAsync<IFormFile>(files, (IFormFile file, CancellationToken ct) => {
         uploads.Add(new Upload(file.FileName, file.OpenReadStream()));
+        return ValueTask.CompletedTask;
     });
     UploadBatch? validatedBatch = await validation.ValidateUploadBatch(new UploadBatch(uploads.ToArray()));
     if (validatedBatch == null)

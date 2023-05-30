@@ -19,17 +19,21 @@ namespace Shardion.Ooparts.Storage
             {
                 return Task.FromResult<Guid?>(batchId);
             }
-            return Task.FromResult<Guid?>(null);
+            else
+            {
+                return Task.FromResult<Guid?>(null!);
+            }
         }
 
         public Task<UploadBatch?> RetrieveUploadBatch(Guid batchId)
         {
-            return Task.FromResult<UploadBatch?>(_batches.TryGetValue(batchId, out UploadBatch batch) ? batch : null);
+            _batches.TryGetValue(batchId, out UploadBatch? batch);
+            return Task.FromResult<UploadBatch?>(batch);
         }
 
         public Task DestroyUploadBatch(Guid batchId)
         {
-            _batches.TryRemove(batchId, out UploadBatch _);
+            _batches.TryRemove(batchId, out UploadBatch? _);
             return Task.CompletedTask;
         }
 

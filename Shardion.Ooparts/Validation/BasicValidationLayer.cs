@@ -8,17 +8,20 @@ namespace Shardion.Ooparts.Validation
 {
     public class BasicValidationLayer : IValidationLayer
     {
-        public async Task<Upload?> ValidateUpload(Upload? upload)
+        public Task<Upload?> ValidateUpload(Upload? upload)
         {
-            if (upload == null)
+            if (upload == null || upload.Data == null)
             {
-                return null;
+                return Task.FromResult<Upload?>(null);
             }
-            if (upload.Data.Length > 100 * 1024 * 1024)
+            else if (upload.Data.Length > 100 * 1024 * 1024 || upload.Data.Length < 4)
             {
-                return null;
+                return Task.FromResult<Upload?>(null);
             }
-            return upload;
+            else
+            {
+                return Task.FromResult<Upload?>(upload);
+            }
         }
 
         public async Task<UploadBatch?> ValidateUploadBatch(UploadBatch? batch)

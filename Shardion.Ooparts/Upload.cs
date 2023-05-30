@@ -7,7 +7,7 @@ namespace Shardion.Ooparts
     public sealed class Upload : IDisposable, IAsyncDisposable
     {
         public string Name { get; }
-        public Stream Data { get; private set; }
+        public Stream? Data { get; private set; }
 
         public Upload(string name, Stream data)
         {
