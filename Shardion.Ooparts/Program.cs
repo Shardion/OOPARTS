@@ -31,6 +31,30 @@ if (app.Environment.IsDevelopment() && app.Services.GetService<IStorageLayer>() 
 app.UseFileServer();
 
 RouteGroupBuilder oopartsApi = app.MapGroup("/api/v0");
+oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidationLayer validation, IStorageLayer storage) => {
+    app.Logger.LogDebug($"Storing batch into backend {storage}");
+    ConcurrentBag<Upload> uploads = new();
+    await Parallel.ForEachAsync<IFormFile>(files, async (IFormFile file, CancellationToken ct) => {
+        uploads.Add(new Upload(file.FileName, file.OpenReadStream()));
+    });
+    UploadBatch? validatedBatch = await validation.ValidateUploadBatch(new UploadBatch(uploads.ToArray()));
+    if (validatedBatch == null)
+    {
+        return Results.StatusCode(500);
+    }
+    else
+    {
+        Guid? storedBatchGuid = await storage.StoreUploadBatch(validatedBatch);
+        if (storedBatchGuid == null)
+        {
+            return Results.StatusCode(500);
+        }
+        else
+        {
+            return Results.Ok(storedBatchGuid);
+        }
+    }
+});
 oopartsApi.MapGet("/{id}", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) => {
     app.Logger.LogDebug($"Retrieving batch {id} from backend {storage}");
     UploadBatch? batch = await validation.ValidateUploadBatch(await storage.RetrieveUploadBatch(id));
