@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
+using System.Threading;
 using System.Text.Json.Serialization;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,22 +16,34 @@ using Shardion.Ooparts;
 using Shardion.Ooparts.Storage;
 using Shardion.Ooparts.Validation;
 
-WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(args);
-builder.Logging.AddConsole();
+ManifestEmbeddedFileProvider efp = new ManifestEmbeddedFileProvider(typeof(Program).Assembly, "wwwroot");
+
+WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions {
+    ApplicationName = "OOPARTS",
+    Args = args,
+    ContentRootPath = "/var/empty/",
+    WebRootPath = "/var/empty/",
+});
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.AddContext<AppJsonSerializerContext>();
 });
+
 builder.Services.AddSingleton<IStorageLayer, MemoryStorageLayer>();
 builder.Services.AddSingleton<IValidationLayer, BasicValidationLayer>();
 
 WebApplication app = builder.Build();
+
+app.UseFileServer();
+app.UseFileServer(new FileServerOptions
+{
+    FileProvider = efp
+});
+
 if (app.Environment.IsDevelopment() && app.Services.GetService<IStorageLayer>() is IStorageLayer backend) {
     app.Logger.LogInformation($"Generated testing upload batch {(await backend.StoreUploadBatch(new UploadBatch(Array.Empty<Upload>()))).ToString()}");
 }
-
-app.UseFileServer();
 
 RouteGroupBuilder oopartsApi = app.MapGroup("/api/v0");
 oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidationLayer validation, IStorageLayer storage) => {

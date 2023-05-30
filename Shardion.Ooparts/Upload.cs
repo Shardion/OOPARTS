@@ -22,7 +22,7 @@ namespace Shardion.Ooparts
             GC.SuppressFinalize(this);
         }
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
             if (Data is not null)
             {
