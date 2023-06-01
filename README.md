@@ -23,8 +23,7 @@ and development environments.
 **No!** Please don't! OOPARTS isn't ready for public use, just yet.
 Things that are missing include:
 
-- **Uploading and downloading files**
-  (this is waiting on a .NET 8 preview 5 bugfix)
+- Uploading and downloading files
 - File size and type limitations
   (to prevent abuse)
 - Built-in HTTPS
