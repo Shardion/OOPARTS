@@ -1,26 +1,30 @@
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using System;
+using Microsoft.AspNetCore.Http;
 using Shardion.Ooparts;
 
 namespace Shardion.Ooparts.Validation
 {
     public class BasicValidationLayer : IValidationLayer
     {
-        public Task<Upload?> ValidateUpload(Upload? upload)
+        public Task<IUpload?> ValidateUpload(IUpload? upload)
         {
-            if (upload == null || upload.Data == null)
+            if (upload == null)
             {
-                return Task.FromResult<Upload?>(null);
+                return Task.FromResult<IUpload?>(null);
+                Console.WriteLine("scrubbed upload: null");
             }
-            else if (upload.Data.Length > 100 * 1024 * 1024 || upload.Data.Length < 4)
+            else if (upload.Length > 100 * 1024 * 1024 || upload.Length < 4)
             {
-                return Task.FromResult<Upload?>(null);
+                return Task.FromResult<IUpload?>(null);
+                Console.WriteLine($"scrubbed upload for size: {upload}");
             }
             else
             {
                 return Task.FromResult<Upload?>(upload);
+                Console.WriteLine($"validated upload: {upload}");
             }
         }
 
@@ -34,14 +38,19 @@ namespace Shardion.Ooparts.Validation
             {
                 return null;
             }
-            ConcurrentBag<Upload> validUploads = new();
-            await Parallel.ForEachAsync<Upload>(validUploads, async (Upload upload, CancellationToken ct) => {
+            List<Upload> validUploads = new();
+            foreach (Upload upload in batch.Uploads)
+            {
                 Upload? validatedUpload = await ValidateUpload(upload);
                 if (validatedUpload != null)
                 {
-                    validUploads.Add(upload);
+                    validUploads.Add(validatedUpload);
                 }
-            });
+                else
+                {
+                    Console.WriteLine($"invalidated upload: {upload}");
+                }
+            }
             batch.Uploads = validUploads.ToArray();
             return batch;
         }

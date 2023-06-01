@@ -5,11 +5,13 @@ namespace Shardion.Ooparts
 {
     public class UploadBatch
     {
-        public IReadOnlyCollection<Upload> Uploads { get; set; }
+        public IReadOnlyCollection<IUpload> Uploads { get; set; }
         public DateTime CreationTimestamp { get; }
+        public Guid Id { get; }
 
-        public UploadBatch(IReadOnlyCollection<Upload> uploads)
+        public UploadBatch(IReadOnlyCollection<IUpload> uploads)
         {
+            Id = Guid.NewGuid();
             Uploads = uploads;
             CreationTimestamp = DateTime.UtcNow;
         }

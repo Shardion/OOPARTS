@@ -3,6 +3,9 @@
 
 { fetchNuGet }: [
   (fetchNuGet { pname = "Microsoft.DotNet.ILCompiler"; version = "8.0.0-preview.4.23259.5"; sha256 = "178hvmkqamwq2zfifmyj63zwl4fdqwx5wljf84cy5wa4wr0grjj3"; })
+  (fetchNuGet { pname = "Microsoft.Extensions.FileProviders.Abstractions"; version = "7.0.0"; sha256 = "0ff20yklyjgyjzdyv7sybczgqhgd557m05dbwxzjznr0x41b180d"; })
+  (fetchNuGet { pname = "Microsoft.Extensions.FileProviders.Embedded"; version = "7.0.5"; sha256 = "0z416ga4r8iaibw1kkmnbz2nnkd7igss9w3p3lqbdd97kqs1l3wy"; })
+  (fetchNuGet { pname = "Microsoft.Extensions.Primitives"; version = "7.0.0"; sha256 = "1b4km9fszid9vp2zb3gya5ni9fn8bq62bzaas2ck2r7gs0sdys80"; })
   (fetchNuGet { pname = "Microsoft.NET.ILLink.Tasks"; version = "8.0.0-preview.4.23259.5"; sha256 = "1km3l73p8khiywjg02wnfmxgpiznhq53b0vc2l5qhkmb0085jw8m"; })
   (fetchNuGet { pname = "runtime.osx-arm64.Microsoft.DotNet.ILCompiler"; version = "8.0.0-preview.4.23259.5"; sha256 = "1m3983kds7kwx2nllifs4nw31nsgbz8083q1aig41v0j73m52db9"; })
 ]

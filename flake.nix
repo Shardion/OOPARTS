@@ -27,20 +27,54 @@
           executables = [ "Shardion.Ooparts" ];
           meta.mainProgram = "Shardion.Ooparts";
         };
+        csharp-ls = with final; buildDotnetModule rec {
+          pname = "csharp-ls-${version}";
+          version = "0.8.0";
+
+          src = fetchFromGitHub {
+            owner = "razzmatazz";
+            repo = "csharp-language-server";
+            rev = "${version}";
+            sha256 = "sha256-JIUYlvZ+9XnisRIgPm0lWsUvgnudUY19rL81iX0Utd4=";
+          };
+          projectFile = "src/CSharpLanguageServer/CSharpLanguageServer.fsproj";
+          
+          dotnet-sdk = dotnet-sdk_7;
+          dotnet-runtime = dotnet-runtime_7;
+          nugetDeps = ./csharp-ls-deps.nix;
+
+          executables = [ "CSharpLanguageServer" ];
+          meta.mainProgram = "CSharpLanguageServer";
+        };
       };
 
       devShells = forAllSystems (system:
         {
-          default = nixpkgsFor.${system}.mkShell rec {
+          default = let
+            dotnet_sdk = (with nixpkgsFor.${system}.dotnetCorePackages; combinePackages [
+              sdk_8_0
+              sdk_7_0
+            ]);
+            dotnet_runtime = (with nixpkgsFor.${system}.dotnetCorePackages; combinePackages [
+              runtime_8_0
+              runtime_7_0
+            ]);
+          in nixpkgsFor.${system}.mkShell rec {
             name = "default";
             packages = with nixpkgsFor.${system}; [
               omnisharp-roslyn
-              (with dotnetCorePackages; combinePackages [
-                sdk_8_0
-                sdk_7_0 # OmniSharp breaks without a supported SDK installed
-              ])
-              openssl
+              dotnet_sdk
+              dotnet_runtime
             ];
+            shellHook = ''
+              # Microsoft.Build.Locate assumes `dotnet` is never a symlink, so
+              # we comply and place the original `dotnet` binary on the PATH
+              # before the dotnet_sdk/bin symlink that Nix adds.
+              # This fixes csharp-ls crashing upon start due to being unable
+              # to find a .NET SDK.
+              export DOTNET_ROOT=${dotnet_sdk}
+              export PATH=${dotnet_sdk}:${dotnet_runtime}:$PATH
+            '';
           };
         }
       );
@@ -48,6 +82,7 @@
       packages = forAllSystems (system:
         {
           inherit (nixpkgsFor.${system}) ooparts;
+          inherit (nixpkgsFor.${system}) csharp-ls;
         });
       defaultPackage = forAllSystems (system: self.packages.${system}.ooparts);
     };

@@ -1,27 +1,38 @@
 using System.Threading.Tasks;
 using System.Collections.Concurrent;
+using System.IO;
 using System;
 
 namespace Shardion.Ooparts.Storage
 {
     /// <summary>
-    /// A non-asynchronous storage backend that keeps all upload batches in memory.
+    /// A storage backend that keeps all upload batches in memory.
     /// Useful for development purposes.
     /// </summary>
     public class MemoryStorageLayer : IStorageLayer
     {
         private ConcurrentDictionary<Guid, UploadBatch> _batches;
 
-        public Task<Guid?> StoreUploadBatch(UploadBatch batch)
+        public async Task<Guid?> StoreUploadBatch(UploadBatch batch)
         {
-            Guid batchId = Guid.NewGuid();
-            if (_batches.TryAdd(batchId, batch))
+            foreach (Upload upload in batch.Uploads)
             {
-                return Task.FromResult<Guid?>(batchId);
+                MemoryStream copiedUploadStream = new();
+                await upload.Data.CopyToAsync(copiedUploadStream);
+                upload.Data = copiedUploadStream;
+            }
+
+            if (_batches.TryAdd(batch.Id, batch))
+            {
+                return batch.Id;
             }
             else
             {
-                return Task.FromResult<Guid?>(null!);
+                foreach (Upload upload in batch.Uploads)
+                {
+                    upload.Data.Close();
+                }
+                return null;
             }
         }
 

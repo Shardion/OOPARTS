@@ -6,9 +6,9 @@ namespace Shardion.Ooparts
 {
     public interface IUpload : IDisposable, IAsyncDisposable
     {
-        string Name { get; }
-        Guid Id { get; }
+        string Name { public get; }
+        Guid Id { public get; }
 
-        Stream? GetData();
+        Stream? OpenDataStream();
     }
 }

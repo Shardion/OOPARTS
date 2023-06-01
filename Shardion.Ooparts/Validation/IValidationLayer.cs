@@ -5,7 +5,7 @@ namespace Shardion.Ooparts.Validation
 {
     public interface IValidationLayer
     {
-        Task<Upload?> ValidateUpload(Upload? upload);
+        Task<IUpload?> ValidateUpload(IUpload? upload);
         Task<UploadBatch?> ValidateUploadBatch(UploadBatch? upload);
     }
 }

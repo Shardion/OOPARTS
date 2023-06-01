@@ -2,3 +2,5 @@ bin/
 obj/
 *~
 result
+omnisharp-roslyn/
+updater.sh
