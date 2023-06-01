@@ -35,3 +35,6 @@ Things that are missing include:
 
 If OOPARTS as a concept sounds useful to you, it may be worth keeping an eye on
 the project, to know when it has improved enough for general use.
+
+----
+<sup>created on linux by hobbyists. [problem,](https://isdotnetopen.com/) ms? :trollface:</sup>
