@@ -23,14 +23,13 @@ and development environments.
 **No!** Please don't! OOPARTS isn't ready for public use, just yet.
 Things that are missing include:
 
-- Uploading and downloading files
+- **Uploading and downloading files**
 - File size and type limitations
   (to prevent abuse)
 - Built-in HTTPS
   (to avoid forcing the use of a reverse proxy for simplicity's sake)
 - Any kind of authentication
   (as it is now, upload batches can be deleted by anybody)
-- CSRF protection
 - Linux distribution packages
 - API documentation
 
