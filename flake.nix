@@ -27,25 +27,6 @@
           executables = [ "Shardion.Ooparts" ];
           meta.mainProgram = "Shardion.Ooparts";
         };
-        csharp-ls = with final; buildDotnetModule rec {
-          pname = "csharp-ls-${version}";
-          version = "0.8.0";
-
-          src = fetchFromGitHub {
-            owner = "razzmatazz";
-            repo = "csharp-language-server";
-            rev = "${version}";
-            sha256 = "sha256-JIUYlvZ+9XnisRIgPm0lWsUvgnudUY19rL81iX0Utd4=";
-          };
-          projectFile = "src/CSharpLanguageServer/CSharpLanguageServer.fsproj";
-          
-          dotnet-sdk = dotnet-sdk_7;
-          dotnet-runtime = dotnet-runtime_7;
-          nugetDeps = ./csharp-ls-deps.nix;
-
-          executables = [ "CSharpLanguageServer" ];
-          meta.mainProgram = "CSharpLanguageServer";
-        };
       };
 
       devShells = forAllSystems (system:
@@ -77,7 +58,6 @@
       packages = forAllSystems (system:
         {
           inherit (nixpkgsFor.${system}) ooparts;
-          inherit (nixpkgsFor.${system}) csharp-ls;
         });
       defaultPackage = forAllSystems (system: self.packages.${system}.ooparts);
     };
