@@ -15,5 +15,11 @@ namespace Shardion.Ooparts
             Uploads = uploads;
             CreationTimestamp = DateTime.UtcNow;
         }
+        public UploadBatch(IReadOnlyCollection<IUpload> uploads, Guid id)
+        {
+            Id = id;
+            Uploads = uploads;
+            CreationTimestamp = DateTime.UtcNow;
+        }
     }
 }

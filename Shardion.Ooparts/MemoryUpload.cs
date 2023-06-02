@@ -8,33 +8,29 @@ namespace Shardion.Ooparts
     {
         public string Name { get; }
         public Guid Id { get; }
+        public byte[] Data { get; }
+        public int DataLength { get; }
 
-        public MemoryUpload(string name, Stream data)
+        public MemoryUpload(string name, byte[] data)
         {
             Name = name;
             Data = data;
+            DataLength = data.Length;
             Id = Guid.NewGuid();
         }
 
-        public virtual Stream? GetData()
+        public virtual Stream? OpenDataStream()
         {
-            
+            return new MemoryStream(Data, false);
         }
 
         public void Dispose()
         {
-            (Data as IDisposable)?.Dispose();
-            Data = null;
             GC.SuppressFinalize(this);
         }
 
         public async ValueTask DisposeAsync()
         {
-            if (Data is not null)
-            {
-                await Data.DisposeAsync();
-            }
-            Data = null;
             GC.SuppressFinalize(this);
         }
     }

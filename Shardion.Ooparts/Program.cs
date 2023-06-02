@@ -44,16 +44,16 @@ app.UseFileServer(new FileServerOptions
 });
 
 if (app.Environment.IsDevelopment() && app.Services.GetService<IStorageLayer>() is IStorageLayer backend) {
-    app.Logger.LogInformation($"Generated testing upload batch {(await backend.StoreUploadBatch(new UploadBatch(Array.Empty<Upload>()))).ToString()}");
+    app.Logger.LogInformation($"Generated testing upload batch {(await backend.StoreUploadBatch(new UploadBatch(Array.Empty<IUpload>()))).ToString()}");
 }
 
 RouteGroupBuilder oopartsApi = app.MapGroup("/api/v0");
 oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidationLayer validation, IStorageLayer storage) => {
     app.Logger.LogDebug($"Storing batch into backend {storage}");
-    List<FileUpload> uploads = new();
+    List<MemoryUpload> uploads = new();
     foreach (IFormFile file in files)
     {
-        uploads.Add(new FileUpload(file));
+        uploads.Add(await CreateUploadFromFile(file));
     }
     UploadBatch? validatedBatch = await validation.ValidateUploadBatch(new UploadBatch(uploads.ToArray()));
     if (validatedBatch == null)
@@ -92,7 +92,7 @@ oopartsApi.MapGet("/{id}/archive", async Task<IResult> (Guid id, IValidationLaye
     {
         foreach (IUpload upload in batch.Uploads)
         {
-            return Results.Stream(upload.Data, "image/webp", "Paralyzed.webp", null, EntityTagHeaderValue.Any, false);
+            return Results.Stream(upload.OpenDataStream(), "image/jpeg", "mass extinction event.jpg", null, EntityTagHeaderValue.Any, false);
         }
         return Results.StatusCode(500);
     }
@@ -108,9 +108,23 @@ oopartsApi.MapDelete("/{id}", async Task<IResult> (Guid id, IValidationLayer val
 });
 app.Run();
 
+static async Task<MemoryUpload> CreateUploadFromFile(IFormFile file)
+{
+    byte[] fileData = new byte[file.Length];
+    using (Stream fileStream = file.OpenReadStream())
+    {
+        // FIXME: support for files >2GB
+        // This unsafe cast to int and IUpload specifying int instead of long
+        // are the only barriers to this, but Stream.ReadAsync does not support
+        // `long` lengths, so we'd need to do some weird logic involving
+        // calling ReadAsync over and over until we have *all* of the data
+        await fileStream.ReadAsync(fileData, 0, (int)file.Length);
+        return new MemoryUpload(file.FileName, fileData);
+    }
+}
+
 [JsonSerializable(typeof(Guid?))]
 [JsonSerializable(typeof(UploadBatch))]
-[JsonSerializable(typeof(FileUpload))]
 [JsonSerializable(typeof(MemoryUpload))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
 {

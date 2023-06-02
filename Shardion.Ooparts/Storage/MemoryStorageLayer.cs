@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.IO;
 using System;
@@ -15,23 +16,26 @@ namespace Shardion.Ooparts.Storage
 
         public async Task<Guid?> StoreUploadBatch(UploadBatch batch)
         {
-            foreach (Upload upload in batch.Uploads)
+            List<IUpload> uploads = new();
+            foreach (IUpload upload in batch.Uploads)
             {
-                MemoryStream copiedUploadStream = new();
-                await upload.Data.CopyToAsync(copiedUploadStream);
-                upload.Data = copiedUploadStream;
+                Stream? uploadStream = upload.OpenDataStream();
+                if (uploadStream != null)
+                {
+                    byte[] uploadData = new byte[upload.DataLength];
+                    await uploadStream.ReadAsync(uploadData, 0, upload.DataLength);
+                    uploads.Add(new MemoryUpload(upload.Name, uploadData));
+                }
             }
 
-            if (_batches.TryAdd(batch.Id, batch))
+            UploadBatch modifiedBatch = new(uploads.ToArray(), batch.Id);
+
+            if (_batches.TryAdd(modifiedBatch.Id, modifiedBatch))
             {
-                return batch.Id;
+                return modifiedBatch.Id;
             }
             else
             {
-                foreach (Upload upload in batch.Uploads)
-                {
-                    upload.Data.Close();
-                }
                 return null;
             }
         }

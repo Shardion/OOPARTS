@@ -11,26 +11,23 @@ namespace Shardion.Ooparts.Validation
     {
         public Task<IUpload?> ValidateUpload(IUpload? upload)
         {
-            if (upload == null)
+            if (upload is null)
             {
                 return Task.FromResult<IUpload?>(null);
-                Console.WriteLine("scrubbed upload: null");
             }
-            else if (upload.Length > 100 * 1024 * 1024 || upload.Length < 4)
+            else if (upload.DataLength > 100 * 1024 * 1024 || upload.DataLength < 4)
             {
                 return Task.FromResult<IUpload?>(null);
-                Console.WriteLine($"scrubbed upload for size: {upload}");
             }
             else
             {
-                return Task.FromResult<Upload?>(upload);
-                Console.WriteLine($"validated upload: {upload}");
+                return Task.FromResult<IUpload?>(upload);
             }
         }
 
         public async Task<UploadBatch?> ValidateUploadBatch(UploadBatch? batch)
         {
-            if (batch == null)
+            if (batch is null)
             {
                 return null;
             }
@@ -38,11 +35,11 @@ namespace Shardion.Ooparts.Validation
             {
                 return null;
             }
-            List<Upload> validUploads = new();
-            foreach (Upload upload in batch.Uploads)
+            List<IUpload> validUploads = new();
+            foreach (IUpload upload in batch.Uploads)
             {
-                Upload? validatedUpload = await ValidateUpload(upload);
-                if (validatedUpload != null)
+                IUpload? validatedUpload = await ValidateUpload(upload);
+                if (validatedUpload is not null)
                 {
                     validUploads.Add(validatedUpload);
                 }
