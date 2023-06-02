@@ -108,6 +108,8 @@ oopartsApi.MapGet("/{id}/archive", async Task<IResult> (Guid id, IValidationLaye
     {
         foreach (IUpload upload in batch.Uploads)
         {
+            // FIXME: This is hardcoded to return a jpg
+            // I don't think you'd use OOPARTS to upload a 500mb jpeg
             return Results.Stream(upload.OpenDataStream(), "image/jpeg", "mass extinction event.jpg", null, EntityTagHeaderValue.Any, false);
         }
         return Results.StatusCode(500);
