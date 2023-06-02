@@ -6,7 +6,7 @@ namespace Shardion.Ooparts
 {
     public interface IUpload : IDisposable, IAsyncDisposable
     {
-        string Name { get; }
+        string FileName { get; }
         Guid Id { get; }
         int DataLength { get; }
 

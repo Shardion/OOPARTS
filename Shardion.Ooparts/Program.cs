@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Routing;
@@ -18,7 +19,8 @@ using Shardion.Ooparts;
 using Shardion.Ooparts.Storage;
 using Shardion.Ooparts.Validation;
 
-WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions {
+WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(new WebApplicationOptions
+{
     ApplicationName = "OOPARTS",
     Args = args,
     ContentRootPath = "/var/empty/",
@@ -28,6 +30,16 @@ WebApplicationBuilder builder = WebApplication.CreateSlimBuilder(new WebApplicat
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+});
+
+
+builder.WebHost.ConfigureKestrel((context, options) =>
+{
+    options.Limits.MaxRequestBodySize = 1024 * 1024 * 1024;
+});
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 1024 * 1024 * 1024;
 });
 
 builder.Services.AddSingleton<IStorageLayer, MemoryStorageLayer>();
@@ -43,12 +55,14 @@ app.UseFileServer(new FileServerOptions
     FileProvider = efp
 });
 
-if (app.Environment.IsDevelopment() && app.Services.GetService<IStorageLayer>() is IStorageLayer backend) {
+if (app.Environment.IsDevelopment() && app.Services.GetService<IStorageLayer>() is IStorageLayer backend)
+{
     app.Logger.LogInformation($"Generated testing upload batch {(await backend.StoreUploadBatch(new UploadBatch(Array.Empty<IUpload>()))).ToString()}");
 }
 
 RouteGroupBuilder oopartsApi = app.MapGroup("/api/v0");
-oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidationLayer validation, IStorageLayer storage) => {
+oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidationLayer validation, IStorageLayer storage) =>
+{
     app.Logger.LogDebug($"Storing batch into backend {storage}");
     List<MemoryUpload> uploads = new();
     foreach (IFormFile file in files)
@@ -73,7 +87,8 @@ oopartsApi.MapPost("/", async Task<IResult> (IFormFileCollection files, IValidat
         }
     }
 });
-oopartsApi.MapGet("/{id}", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) => {
+oopartsApi.MapGet("/{id}", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) =>
+{
     app.Logger.LogDebug($"Retrieving batch {id} from backend {storage}");
     UploadBatch? batch = await validation.ValidateUploadBatch(await storage.RetrieveUploadBatch(id));
     if (batch != null)
@@ -85,7 +100,8 @@ oopartsApi.MapGet("/{id}", async Task<IResult> (Guid id, IValidationLayer valida
         return Results.NotFound();
     }
 });
-oopartsApi.MapGet("/{id}/archive", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) => {
+oopartsApi.MapGet("/{id}/archive", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) =>
+{
     app.Logger.LogDebug($"Retrieving batch {id} from backend {storage}");
     UploadBatch? batch = await storage.RetrieveUploadBatch(id);
     if (batch != null)
@@ -101,7 +117,8 @@ oopartsApi.MapGet("/{id}/archive", async Task<IResult> (Guid id, IValidationLaye
         return Results.NotFound();
     }
 });
-oopartsApi.MapDelete("/{id}", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) => {
+oopartsApi.MapDelete("/{id}", async Task<IResult> (Guid id, IValidationLayer validation, IStorageLayer storage) =>
+{
     app.Logger.LogDebug($"Destroying batch {id} in backend {storage}");
     await storage.DestroyUploadBatch(id);
     return Results.Ok();

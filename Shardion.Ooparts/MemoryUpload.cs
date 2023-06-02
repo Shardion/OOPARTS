@@ -6,14 +6,14 @@ namespace Shardion.Ooparts
 {
     public class MemoryUpload : IUpload
     {
-        public string Name { get; }
+        public string FileName { get; }
         public Guid Id { get; }
         public byte[] Data { get; }
         public int DataLength { get; }
 
-        public MemoryUpload(string name, byte[] data)
+        public MemoryUpload(string fileName, byte[] data)
         {
-            Name = name;
+            FileName = Path.GetFileName(fileName);
             Data = data;
             DataLength = data.Length;
             Id = Guid.NewGuid();

@@ -24,7 +24,7 @@ namespace Shardion.Ooparts.Storage
                 {
                     byte[] uploadData = new byte[upload.DataLength];
                     await uploadStream.ReadAsync(uploadData, 0, upload.DataLength);
-                    uploads.Add(new MemoryUpload(upload.Name, uploadData));
+                    uploads.Add(new MemoryUpload(upload.FileName, uploadData));
                 }
             }
 

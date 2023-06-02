@@ -15,7 +15,7 @@ namespace Shardion.Ooparts.Validation
             {
                 return Task.FromResult<IUpload?>(null);
             }
-            else if (upload.DataLength > 100 * 1024 * 1024 || upload.DataLength < 4)
+            else if (upload.DataLength > 1024 * 1024 * 1024 || upload.DataLength < 4)
             {
                 return Task.FromResult<IUpload?>(null);
             }
