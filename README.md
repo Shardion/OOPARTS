@@ -24,6 +24,7 @@ and development environments.
 Things that are missing include:
 
 - Downloading files with a filename that isn't `mass extinction event.jpg` <sup>(it's a funny image though)</sup>
+- On-disk file storage
 - Configuration support
 - A nice user interface
 - File type limitation support
